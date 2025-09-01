@@ -77,22 +77,33 @@ class WeatherSearchActivity : AppCompatActivity() {
         }
     }
 
-    private fun updateUI(weather: com.openweather.exam.data.WeatherResponse) {
-        val city = weather.city ?: "Unknown"
-        val country = weather.sys?.country ?: ""
-        val temp = weather.main?.temp?.toInt() ?: 0
-        val description = weather.weather?.firstOrNull()?.description ?: "N/A"
+ private fun updateUI(weather: com.openweather.exam.data.WeatherResponse) {
+    val city = weather.city ?: "Unknown"
+    val country = weather.sys?.country ?: ""
+    val temp = weather.main?.temp?.toInt() ?: 0
+    val description = weather.weather?.firstOrNull()?.description ?: "N/A"
 
-        binding.tvWeatherResult.text = "$city, $country\n$temp°C\n$description"
+    binding.tvWeatherResult.text = "$city, $country\n$temp°C\n$description"
 
-        // Sun or moon icon logic
-        val currentTimeSec = System.currentTimeMillis() / 1000
-        val sunsetTime = weather.sys?.sunset ?: currentTimeSec
-        val iconRes = if (currentTimeSec < sunsetTime) {
-            R.drawable.ic_sun // your sun icon in drawable
-        } else {
-            R.drawable.ic_moon // your moon icon in drawable
-        }
-        binding.tvWeatherResult.setCompoundDrawablesWithIntrinsicBounds(iconRes, 0, 0, 0)
+    // Sun or moon icon logic
+    val currentTimeSec = System.currentTimeMillis() / 1000
+    val sunsetTime = weather.sys?.sunset ?: currentTimeSec
+    val iconRes = if (currentTimeSec < sunsetTime) {
+        R.drawable.ic_sun
+    } else {
+        R.drawable.ic_moon
     }
+
+    // Load drawable and resize
+    val drawable = resources.getDrawable(iconRes, null)
+    val iconSize = (48 * resources.displayMetrics.density).toInt() // 48dp converted to px
+    drawable.setBounds(0, 0, iconSize, iconSize)
+
+    // Set drawable to left and vertically center
+    binding.tvWeatherResult.setCompoundDrawables(drawable, null, null, null)
+    binding.tvWeatherResult.compoundDrawablePadding = (8 * resources.displayMetrics.density).toInt()
+
+    // Center vertically with text
+    binding.tvWeatherResult.gravity = android.view.Gravity.CENTER_VERTICAL
+}
 }
