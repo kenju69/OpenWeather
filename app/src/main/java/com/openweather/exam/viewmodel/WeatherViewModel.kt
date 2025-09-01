@@ -17,4 +17,16 @@ class WeatherViewModel(private val repo: WeatherRepository) : ViewModel() {
             _weather.value = repo.fetchCurrentWeather(lat, lon, apiKey)
         }
     }
+
+    fun fetchWeatherByCity(city: String, apiKey: String) {
+    viewModelScope.launch {
+        try {
+            val response = repo.getWeatherByCity(city, "metric", apiKey)
+            _weather.value = response
+        } catch (e: Exception) {
+            // Handle error if needed
+            _weather.value = null
+        }
+    }
+}
 }
