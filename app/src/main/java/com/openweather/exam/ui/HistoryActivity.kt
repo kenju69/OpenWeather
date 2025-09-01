@@ -1,38 +1,33 @@
 package com.openweather.exam.ui
 
 import android.os.Bundle
-import android.widget.ArrayAdapter
-import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.openweather.exam.data.AppDatabase
-import com.openweather.exam.data.WeatherRepository
 import com.openweather.exam.databinding.ActivityHistoryBinding
-import com.openweather.exam.viewmodel.HistoryViewModel
-import com.openweather.exam.viewmodel.HistoryViewModelFactory
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
 
 class HistoryActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityHistoryBinding
-
-    private val viewModel: HistoryViewModel by viewModels {
-        val db = AppDatabase.getDatabase(applicationContext)
-        HistoryViewModelFactory(WeatherRepository(db.userDao(), db.weatherDao()))
-    }
+    private lateinit var adapter: WeatherHistoryAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityHistoryBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        val adapter = ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, mutableListOf())
-        binding.lvHistory.adapter = adapter
+        val db = AppDatabase.getDatabase(this)
+        val repo = com.openweather.exam.data.WeatherRepository(db.userDao(), db.weatherDao())
 
-        lifecycleScope.launchWhenStarted {
-            viewModel.getHistory().collectLatest { history ->
-                adapter.clear()
-                adapter.addAll(history.map { "${it.city}, ${it.country} - ${it.temp}°C" })
+        binding.rvHistory.layoutManager = LinearLayoutManager(this)
+
+        lifecycleScope.launch {
+            repo.getWeatherHistory().collectLatest { history ->
+                adapter = WeatherHistoryAdapter(history)
+                binding.rvHistory.adapter = adapter
             }
         }
     }
