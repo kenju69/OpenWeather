@@ -1,4 +1,4 @@
 <resources>
     <string name="app_name">Open Weather</string>
-    <string name="api_key">YOUR API KEY</string>
+    <string name="api_key">YOUR_API_KEY_HERE</string>
 </resources>
