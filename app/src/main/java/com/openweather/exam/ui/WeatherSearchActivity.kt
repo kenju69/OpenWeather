@@ -27,9 +27,8 @@ class WeatherSearchActivity : AppCompatActivity() {
         binding = ActivityWeatherSearchBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        val apiKey = "YOUR_API_KEY" // Replace via README
+        val apiKey = "YOUR_API_KEY" // replace in README
 
-        // Search by city
         binding.btnSearch.setOnClickListener {
             val city = binding.etCity.text.toString()
             if (city.isNotEmpty()) {
@@ -39,12 +38,10 @@ class WeatherSearchActivity : AppCompatActivity() {
             }
         }
 
-        // Go to history screen
         binding.btnHistory.setOnClickListener {
             startActivity(Intent(this, HistoryActivity::class.java))
         }
 
-        // Observe ViewModel state and update UI
         lifecycleScope.launchWhenStarted {
             viewModel.weather.collectLatest { weather ->
                 if (weather != null) {
