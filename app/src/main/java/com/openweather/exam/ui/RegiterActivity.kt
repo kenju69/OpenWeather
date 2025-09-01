@@ -27,16 +27,16 @@ class RegisterActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         binding.btnRegister.setOnClickListener {
-            val username = binding.etUsername.text.toString()
-            val password = binding.etPassword.text.toString()
-            viewModel.register(username, password)
+            val email = binding.etRegisterEmail.text.toString()
+            val password = binding.etRegisterPassword.text.toString()
+            viewModel.register(email, password)
         }
 
         lifecycleScope.launchWhenStarted {
             viewModel.authResult.collectLatest { result ->
                 if (result == true) {
                     Toast.makeText(this@RegisterActivity, "Registration successful", Toast.LENGTH_SHORT).show()
-                    finish() // go back to login
+                    finish() // return to login
                 }
             }
         }
