@@ -6,6 +6,7 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import com.openweather.exam.data.AppDatabase
+import com.openweather.exam.data.RetrofitInstance
 import com.openweather.exam.data.WeatherRepository
 import com.openweather.exam.databinding.ActivityRegisterBinding
 import com.openweather.exam.viewmodel.AuthViewModel
@@ -18,7 +19,10 @@ class RegisterActivity : AppCompatActivity() {
 
     private val viewModel: AuthViewModel by viewModels {
         val db = AppDatabase.getDatabase(applicationContext)
-        AuthViewModelFactory(WeatherRepository(db.userDao(), db.weatherDao()))
+        AuthViewModelFactory(WeatherRepository(
+            db.userDao(), db.weatherDao(),
+            apiService = RetrofitInstance.api
+        ))
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {

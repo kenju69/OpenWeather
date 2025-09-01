@@ -19,7 +19,7 @@ class LoginActivity : AppCompatActivity() {
 
     private val viewModel: AuthViewModel by viewModels {
         val db = AppDatabase.getDatabase(applicationContext)
-        AuthViewModelFactory(WeatherRepository(db.userDao(), db.weatherDao()))
+        AuthViewModelFactory(WeatherRepository(db.userDao(), db.weatherDao(), com.openweather.exam.data.RetrofitInstance.api))
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -41,7 +41,8 @@ class LoginActivity : AppCompatActivity() {
             viewModel.authResult.collectLatest { result ->
                 when (result) {
                     true -> {
-                        startActivity(Intent(this@LoginActivity, WeatherSearchActivity::class.java))
+                       // startActivity(Intent(this@LoginActivity, WeatherSearchActivity::class.java))
+                        startActivity(Intent(this@LoginActivity, MainWeatherActivity::class.java))
                         finish()
                     }
                     false -> Toast.makeText(this@LoginActivity, "Invalid email or password", Toast.LENGTH_SHORT).show()

@@ -12,14 +12,13 @@ import com.openweather.exam.databinding.ActivityWeatherSearchBinding
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import java.util.*
 
 class WeatherSearchActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityWeatherSearchBinding
     private val repo by lazy {
         val db = AppDatabase.getDatabase(this)
-        com.openweather.exam.data.WeatherRepository(db.userDao(), db.weatherDao())
+        com.openweather.exam.data.WeatherRepository(db.userDao(), db.weatherDao(), com.openweather.exam.data.RetrofitInstance.api)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -44,31 +43,26 @@ class WeatherSearchActivity : AppCompatActivity() {
     private fun fetchWeather(city: String) {
         CoroutineScope(Dispatchers.IO).launch {
             try {
-                val response = RetrofitInstance.api.getWeatherByCity(
-                    city,
-                    "metric",
-                    "91a7b39c1cfd41554426d2703075a759" // replace with your key in production
-                )
+                val response = RetrofitInstance.api.getWeatherByCity(city, "metric", "91a7b39c1cfd41554426d2703075a759")
 
-                // Save to Room database
+                // Insert into Room
                 val firstWeather = response.weather?.firstOrNull()
-                response.city?.let { cityName ->
-                    response.sys?.country?.let { country ->
-                        val entity = WeatherEntity(
-                            city = cityName,
-                            country = country,
-                            temp = response.main?.temp ?: 0.0,
-                            description = firstWeather?.description ?: "N/A",
-                            timestamp = response.timestamp ?: System.currentTimeMillis() / 1000
-                        )
-                        repo.weatherDao.insert(entity)
-                    }
-                }
+                val entity = WeatherEntity(
+                    city = response.city.toString(),
+                    country = response.sys?.country.toString(),
+                    temp = response.main?.temp,
+                    description = firstWeather?.description ?: "N/A",
+                    sunrise = response.sys?.sunrise,
+                    sunset = response.sys?.sunset,
+                    timestamp = response.timestamp
+                )
+                val db = com.openweather.exam.data.AppDatabase.getDatabase(this@WeatherSearchActivity)
+                val repo = com.openweather.exam.data.WeatherRepository(db.userDao(), db.weatherDao(), com.openweather.exam.data.RetrofitInstance.api)
+                repo.weatherDao.insert(entity)
 
                 runOnUiThread {
-                    updateUI(response)
+                    updateUI(entity)
                 }
-
             } catch (e: Exception) {
                 runOnUiThread {
                     binding.tvWeatherResult.text = "Error: ${e.message}"
@@ -77,33 +71,22 @@ class WeatherSearchActivity : AppCompatActivity() {
         }
     }
 
- private fun updateUI(weather: com.openweather.exam.data.WeatherResponse) {
-    val city = weather.city ?: "Unknown"
-    val country = weather.sys?.country ?: ""
-    val temp = weather.main?.temp?.toInt() ?: 0
-    val description = weather.weather?.firstOrNull()?.description ?: "N/A"
+    private fun updateUI(weather: WeatherEntity) {
+        binding.tvWeatherResult.text = "${weather.city}, ${weather.country}\n${weather.temp?.toInt()}°C\n${weather.description}"
 
-    binding.tvWeatherResult.text = "$city, $country\n$temp°C\n$description"
+        // Determine icon
+        val iconRes = when {
+            weather.description.contains("rain", ignoreCase = true) -> R.drawable.ic_rain
+            (System.currentTimeMillis() / 1000) < weather.sunset!! -> R.drawable.ic_sun
+            else -> R.drawable.ic_moon
+        }
 
-    // Sun or moon icon logic
-    val currentTimeSec = System.currentTimeMillis() / 1000
-    val sunsetTime = weather.sys?.sunset ?: currentTimeSec
-    val iconRes = if (currentTimeSec < sunsetTime) {
-        R.drawable.ic_sun
-    } else {
-        R.drawable.ic_moon
+        val drawable = resources.getDrawable(iconRes, null)
+        val iconSize = (48 * resources.displayMetrics.density).toInt() // 48dp
+        drawable.setBounds(0, 0, iconSize, iconSize)
+
+        binding.tvWeatherResult.setCompoundDrawables(drawable, null, null, null)
+        binding.tvWeatherResult.compoundDrawablePadding = (8 * resources.displayMetrics.density).toInt()
+        binding.tvWeatherResult.gravity = android.view.Gravity.CENTER_VERTICAL
     }
-
-    // Load drawable and resize
-    val drawable = resources.getDrawable(iconRes, null)
-    val iconSize = (48 * resources.displayMetrics.density).toInt() // 48dp converted to px
-    drawable.setBounds(0, 0, iconSize, iconSize)
-
-    // Set drawable to left and vertically center
-    binding.tvWeatherResult.setCompoundDrawables(drawable, null, null, null)
-    binding.tvWeatherResult.compoundDrawablePadding = (8 * resources.displayMetrics.density).toInt()
-
-    // Center vertically with text
-    binding.tvWeatherResult.gravity = android.view.Gravity.CENTER_VERTICAL
-}
 }

@@ -16,11 +16,10 @@ class MainWeatherActivity : AppCompatActivity() {
         val viewPager = findViewById<ViewPager2>(R.id.viewPager)
         val tabLayout = findViewById<TabLayout>(R.id.tabLayout)
 
-        val adapter = WeatherPagerAdapter(this)
-        viewPager.adapter = adapter
+        viewPager.adapter = WeatherPagerAdapter(this)
 
-        TabLayoutMediator(tabLayout, viewPager) { tab, position ->
-            tab.text = if (position == 0) "Current" else "History"
+        TabLayoutMediator(tabLayout, viewPager) { tab, pos ->
+            tab.text = if (pos == 0) "Current" else "History"
         }.attach()
     }
 }

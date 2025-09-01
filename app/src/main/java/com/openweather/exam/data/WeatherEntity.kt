@@ -10,5 +10,7 @@ data class WeatherEntity(
     val country: String,
     val temp: Double?,
     val description: String,
+    val sunrise: Long?,
+    val sunset: Long?,
     val timestamp: Long?
 )

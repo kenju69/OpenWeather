@@ -15,6 +15,8 @@ coroutines = "1.7.3"
 junit = "4.13.2"
 junitExt = "1.2.1"
 espressoCore = "3.6.1"
+recyclerview = "1.4.0"
+viewpager2 = "1.1.0"
 
 [libraries]
 core-ktx = { module = "androidx.core:core-ktx", version.ref = "coreKtx" }
@@ -44,6 +46,9 @@ coroutines-android = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-androi
 junit = { module = "junit:junit", version.ref = "junit" }
 androidx-junit = { module = "androidx.test.ext:junit", version.ref = "junitExt" }
 androidx-espresso-core = { module = "androidx.test.espresso:espresso-core", version.ref = "espressoCore" }
+androidx-recyclerview = { group = "androidx.recyclerview", name = "recyclerview", version.ref = "recyclerview" }
+
+androidx-viewpager2 = { group = "androidx.viewpager2", name = "viewpager2", version.ref = "viewpager2"}
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
