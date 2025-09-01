@@ -28,16 +28,15 @@ class LoginActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         binding.btnLogin.setOnClickListener {
-            val username = binding.etUsername.text.toString()
+            val email = binding.etEmail.text.toString()
             val password = binding.etPassword.text.toString()
-            viewModel.login(username, password)
+            viewModel.login(email, password)
         }
 
         binding.tvRegisterLink.setOnClickListener {
             startActivity(Intent(this, RegisterActivity::class.java))
         }
 
-        // Observe login result
         lifecycleScope.launchWhenStarted {
             viewModel.authResult.collectLatest { result ->
                 when (result) {
@@ -45,7 +44,7 @@ class LoginActivity : AppCompatActivity() {
                         startActivity(Intent(this@LoginActivity, WeatherSearchActivity::class.java))
                         finish()
                     }
-                    false -> Toast.makeText(this@LoginActivity, "Invalid username or password", Toast.LENGTH_SHORT).show()
+                    false -> Toast.makeText(this@LoginActivity, "Invalid email or password", Toast.LENGTH_SHORT).show()
                     null -> {} // no action yet
                 }
             }
