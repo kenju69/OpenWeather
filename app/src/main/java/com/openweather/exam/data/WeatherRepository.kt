@@ -39,5 +39,21 @@ class WeatherRepository(
         return response
     }
 
+    suspend fun getWeatherByCity(city: String, units: String, apiKey: String): WeatherResponse {
+    val response = RetrofitInstance.api.getWeatherByCity(city, units, apiKey)
+    // Save to database
+    val firstWeather = response.weather.firstOrNull()
+    weatherDao.insert(
+        WeatherEntity(
+            city = response.city,
+            country = response.sys.country,
+            temp = response.main.temp,
+            description = firstWeather?.description ?: "N/A",
+            timestamp = response.timestamp
+        )
+    )
+    return response
+}
+
     fun getWeatherHistory(): Flow<List<WeatherEntity>> = weatherDao.getAll()
 }
