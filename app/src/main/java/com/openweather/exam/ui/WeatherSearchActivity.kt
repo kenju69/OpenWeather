@@ -29,6 +29,7 @@ class WeatherSearchActivity : AppCompatActivity() {
 
         val apiKey = "YOUR_API_KEY" // Replace via README
 
+        // Search by city
         binding.btnSearch.setOnClickListener {
             val city = binding.etCity.text.toString()
             if (city.isNotEmpty()) {
@@ -38,10 +39,12 @@ class WeatherSearchActivity : AppCompatActivity() {
             }
         }
 
+        // Go to history screen
         binding.btnHistory.setOnClickListener {
             startActivity(Intent(this, HistoryActivity::class.java))
         }
 
+        // Observe ViewModel state and update UI
         lifecycleScope.launchWhenStarted {
             viewModel.weather.collectLatest { weather ->
                 if (weather != null) {
@@ -50,6 +53,8 @@ class WeatherSearchActivity : AppCompatActivity() {
                         append("Temp: ${weather.main.temp}°C\n")
                         append("Desc: ${weather.weather.firstOrNull()?.description ?: "N/A"}")
                     }
+                } else {
+                    binding.tvWeatherResult.text = "No data"
                 }
             }
         }
