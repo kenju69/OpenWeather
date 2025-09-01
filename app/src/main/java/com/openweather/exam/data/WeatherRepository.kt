@@ -26,12 +26,12 @@ class WeatherRepository(
     // --- WEATHER ---
     suspend fun fetchCurrentWeather(lat: Double, lon: Double, apiKey: String): WeatherResponse {
         val response = RetrofitInstance.api.getCurrentWeather(lat, lon, "metric", apiKey)
-        val firstWeather = response.weather.firstOrNull()
+        val firstWeather = response.weather?.firstOrNull()
         weatherDao.insert(
             WeatherEntity(
-                city = response.city,
-                country = response.sys.country,
-                temp = response.main.temp,
+                city = response.city.toString(),
+                country = response.sys?.country.toString(),
+                temp = response.main?.temp,
                 description = firstWeather?.description ?: "N/A",
                 timestamp = response.timestamp
             )
@@ -42,12 +42,12 @@ class WeatherRepository(
     suspend fun getWeatherByCity(city: String, units: String, apiKey: String): WeatherResponse {
     val response = RetrofitInstance.api.getWeatherByCity(city, units, apiKey)
     // Save to database
-    val firstWeather = response.weather.firstOrNull()
+    val firstWeather = response.weather?.firstOrNull()
     weatherDao.insert(
         WeatherEntity(
-            city = response.city,
-            country = response.sys.country,
-            temp = response.main.temp,
+            city = response.city.toString(),
+            country = response.sys?.country.toString(),
+            temp = response.main?.temp,
             description = firstWeather?.description ?: "N/A",
             timestamp = response.timestamp
         )

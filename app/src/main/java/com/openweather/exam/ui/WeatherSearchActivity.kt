@@ -27,7 +27,7 @@ class WeatherSearchActivity : AppCompatActivity() {
         binding = ActivityWeatherSearchBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        val apiKey = "YOUR_API_KEY" // replace in README
+        val apiKey = "91a7b39c1cfd41554426d2703075a759" // replace in README
 
         binding.btnSearch.setOnClickListener {
             val city = binding.etCity.text.toString()
@@ -46,9 +46,9 @@ class WeatherSearchActivity : AppCompatActivity() {
             viewModel.weather.collectLatest { weather ->
                 if (weather != null) {
                     binding.tvWeatherResult.text = buildString {
-                        append("${weather.city}, ${weather.sys.country}\n")
-                        append("Temp: ${weather.main.temp}°C\n")
-                        append("Desc: ${weather.weather.firstOrNull()?.description ?: "N/A"}")
+                        append("${weather.city}, ${weather.sys?.country}\n")
+                        append("Temp: ${weather.main?.temp}°C\n")
+                        append("Desc: ${weather.weather?.firstOrNull()?.description ?: "N/A"}")
                     }
                 } else {
                     binding.tvWeatherResult.text = "No data"
