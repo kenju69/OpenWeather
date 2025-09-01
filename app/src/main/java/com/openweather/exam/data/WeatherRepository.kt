@@ -5,14 +5,13 @@ import java.security.MessageDigest
 
 class WeatherRepository(
     private val userDao: UserDao,
-    private val weatherDao: WeatherDao
+    internal val weatherDao: WeatherDao
 ) {
     // --- AUTH ---
     suspend fun registerUser(username: String, password: String) {
         val hash = hashPassword(password)
         userDao.register(UserEntity(username, hash))
     }
-
     suspend fun loginUser(username: String, password: String): Boolean {
         val user = userDao.getUser(username) ?: return false
         return user.passwordHash == hashPassword(password)
