@@ -30,7 +30,9 @@ This is an Android application built as part of a coding assessment. The app con
 
 ### API Key Setup
 
-Add your API key in `res/values/strings.xml`:
+Add your API key in `res/values/strings.xml`: and local.propterties
 
 ```xml
 <string name="api_key">YOUR_API_KEY_HERE</string>
+OPENWEATHER_API_KEY=YOUR_API_KEY_HERE
+
